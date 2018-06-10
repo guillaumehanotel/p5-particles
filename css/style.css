@@ -1,0 +1,59 @@
+body {
+    color: black;
+}
+#options-box {
+
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 1px;
+    width: 250px;
+    height: 400px;
+    position: absolute;
+    z-index: 100;
+    padding: 5px;
+
+}
+
+label {
+    color: black;
+    font-size: 15px;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: #1540d8 !important;
+}
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: #385de0 !important;
+}
+
+.switch label{
+    margin-left: 10px;
+    display: inline-block;
+    width: 250px;
+}
+
+.switch label .lever{
+    position: absolute;
+    margin-top: 6px;
+    right: 0;
+}
+input.range {
+    text-align: center;
+    margin-top: 0;
+}
+
+.switch {
+    margin-bottom: 5px;
+}
+
+.options-box div {
+    text-align: center;
+}
+
+.colorpicker {
+    z-index: 150;
+}
+
+
+#colorSelector{
+    margin: auto;
+}

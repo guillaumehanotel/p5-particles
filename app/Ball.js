@@ -23,7 +23,7 @@ function Ball(x, y) {
 // Newton's 2nd Law ! (the beginning)
 Ball.prototype.applyForce = function (forceVector) {
 
-    this.acceleration = forceVector;
+    this.acceleration.add(forceVector);
 
 };
 
@@ -47,6 +47,7 @@ Ball.prototype.update = function () {
         this.acceleration = p5.Vector.random2D();
         this.velocity.add(this.acceleration)
     }
+
 
     if (options.enableMovement) {
         this.position.add(this.velocity);

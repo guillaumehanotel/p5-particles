@@ -1,6 +1,6 @@
 
 let optionsBox = $('#options-box');
-let appURL = "/home/guillaumeh/Documents/Workspaces/Javascript/Work/PhysicsThings/index.html";
+let appURL = "/home/guillaumeh/Documents/Workspaces/Javascript/Work/Particles-P5/index.html";
 
 let options = {
     modeLine: true,
@@ -10,9 +10,15 @@ let options = {
     randomStart: true,
     randomAcceleration: false,
     nbBalls: 50,
-    radius: 1
+    radius: 1,
+    threshold: 150,
+    backgroundColor: '#0F1C70',
+    lineColor: '#FFFFFF'
 };
 
+/**
+ * Récupère les valeurs des éléments HTML et met à jour l'objet options
+ */
 function getCurrentOptions(){
 
     options['modeLine'] = $('#mode-line').prop('checked');
@@ -21,13 +27,18 @@ function getCurrentOptions(){
     options['border'] = $('#border').prop('checked');
     options['randomStart'] = $('#random-start').prop('checked');
     options['randomAcceleration'] = $('#random-accel').prop('checked');
-    options['nbBalls'] = $('#nbBalls').val();
+    options['nbBalls'] = parseInt($('#nbBalls').val());
     options['radius'] = parseInt($('#radius').val());
+    options['threshold'] = parseInt($('#threshold').val());
+    options['backgroundColor'] = $('#colorSelector.bgColor div').css('backgroundColor');
+    options['lineColor'] = $('#colorSelector.lineColor div').css('backgroundColor');
 
 }
 
-
-
+/**
+ * retourne l'URL en fonction des valeurs de l'objet options
+ * @returns {string}
+ */
 function reloadedURL(){
     let reloadedUrl = appURL + "?";
     $.each(options, function (index, value) {
@@ -37,7 +48,10 @@ function reloadedURL(){
 }
 
 
-// switch
+/**
+ * Lors d'un click sur un switch, récupère les valeurs de la box options,
+ * si l'élément possède la classe reload, la page est reload
+ */
 $('.option-element').click(function () {
 
     getCurrentOptions();
@@ -49,8 +63,10 @@ $('.option-element').click(function () {
 });
 
 
-// slider
-
+/**
+ * Lorsqu'un slider bouge, récupère les valeurs de la box options,
+ * et selon le slider, on met à jour les options
+ */
 $(".range").on("input change", function() {
 
     getCurrentOptions();
@@ -67,19 +83,47 @@ $(".range").on("input change", function() {
 
     } else if($(this).is("#radius")){
 
-        if(rangeValue > options.radius){
-            while (balls.length < options.radius){
-                options.radius++;
-            }
-        } else if (rangeValue < options.radius){
-            while (balls.length > options.radius){
-                options.radius--;
-            }
-        }
+        options.radius = rangeValue;
 
+    } else if ($(this).is("#threshold")) {
+
+        options.threshold = rangeValue;
     }
 
+});
 
+
+$('#colorSelector.bgColor').ColorPicker({
+    color: options.backgroundColor,
+    onShow: function (colpkr) {
+        $(colpkr).fadeIn(500);
+        return false;
+    },
+    onHide: function (colpkr) {
+        $(colpkr).fadeOut(500);
+        return false;
+    },
+    onChange: function (hsb, hex, rgb) {
+        $('#colorSelector.bgColor div').css('backgroundColor', '#' + hex);
+        options.backgroundColor = '#' + hex;
+    }
+});
+
+
+$('#colorSelector.lineColor').ColorPicker({
+    color: options.lineColor,
+    onShow: function (colpkr) {
+        $(colpkr).fadeIn(500);
+        return false;
+    },
+    onHide: function (colpkr) {
+        $(colpkr).fadeOut(500);
+        return false;
+    },
+    onChange: function (hsb, hex, rgb) {
+        $('#colorSelector.lineColor div').css('backgroundColor', '#' + hex);
+        options.lineColor = '#' + hex;
+    }
 });
 
 
@@ -114,15 +158,14 @@ let screenWidth;
 let screenHeight;
 
 let LIMIT_VELOCITY = 5;
-let THRESHOLD_DRAW_LINES = 150;
 let NB_MAX_BALLS  = 120;
 
 let initAssociation = true;
 
+
 let MIN_LINE_WEIGHT = 0.1;
 let MAX_LINE_WEIGHT = 0.9;
 
-let BACKGROUND_COLOR = '#0F1C70';
 let LINE_COLOR = '#FFF';
 
 let ID = 1;
@@ -136,7 +179,7 @@ function setup() {
     screenHeight = windowHeight;
 
     canvas = createCanvas(windowWidth, windowHeight);
-    background(BACKGROUND_COLOR);
+    background(options.backgroundColor);
 
 
     for (let i = 0; i < options.nbBalls; i++) {
@@ -159,6 +202,10 @@ function setup() {
 
 }
 
+/**
+ * Récupère les paramètres de l'URL, et initialise l'objet options,
+ * et set les éléments HTML
+ */
 function setOptionsFromParameters() {
 
     let url = new URL(window.location.href);
@@ -209,7 +256,13 @@ function setOptionsFromParameters() {
     let radiusParameter = parseInt(url.searchParams.get("radius"));
     document.getElementById("radius").value = radiusParameter.toString();
     document.getElementById("radiusOuput").value = radiusParameter.toString();
-    options.radius = parseInt(radiusParameter);
+    options.radius = radiusParameter;
+
+    // Threshold
+    let thresholdParameter = parseInt(url.searchParams.get("threshold"));
+    document.getElementById("threshold").value = thresholdParameter.toString();
+    document.getElementById("thresholdOuput").value = thresholdParameter.toString();
+    options.threshold= thresholdParameter;
 
 
 }
@@ -234,10 +287,11 @@ function mouseDragged() {
 
 
 
+
 // on efface / recalcule la position de la balle / réaffiche la balle
 function draw() {
 
-    background(BACKGROUND_COLOR);
+    background(options.backgroundColor);
 
     limitNbBalls();
 
@@ -269,10 +323,12 @@ function createball(posX, posY) {
     associationsManager.addBallAssociation(newBall)
 }
 
+
 function deleteBall() {
     let removedBall = balls.shift();
     associationsManager.deleteAssociationsByBall(removedBall);
 }
+
 
 function drawBalls() {
     for (let i = 0; i < balls.length; i++) {
@@ -281,7 +337,6 @@ function drawBalls() {
         balls[i].display();
     }
 }
-
 
 
 function drawShapesBetweenBalls() {
@@ -295,9 +350,9 @@ function drawShapesBetweenBalls() {
 
         noFill();
         //fill(127, 150);
-        stroke(LINE_COLOR);
+        stroke(options.lineColor);
 
-        if (d < THRESHOLD_DRAW_LINES) {
+        if (d < options.threshold) {
 
             strokeWeight(calculateLineWeight(d));
 
@@ -319,7 +374,7 @@ function calculateLineWeight(distance) {
     // calculer les différents paliers :
     // prendre valeur max distance possible, càd THRESHOLD_DRAW_LINES
     // divisé par nbRangeLineWeight donc par exemple 150 / 7  = 21.xx
-    let levelLineWeight = THRESHOLD_DRAW_LINES / calculateNbLevelLineWeight();
+    let levelLineWeight = options.threshold / calculateNbLevelLineWeight();
 
     // on prend la valeur d, donc entre 0 et 150, et on compte le nb de paliers qu'on a dans cette valeur
     // ex : 85 % 21
@@ -346,7 +401,7 @@ function calculateNbLevelLineWeight() {
 function enableCollision() {
     for (let i = 0; i < ballsAssociations.length; i++) {
         if (ballsAssociations[i].ball1.intersects(ballsAssociations[i].ball2)) {
-            // TODO collision
+
         }
     }
 }
@@ -358,8 +413,8 @@ window.onresize = function () {
     canvas.resize(w, h);
     width = w;
     height = h;
-
 };
+
 
 function myRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -377,7 +432,4 @@ function initAssociationsManager() {
         }
     }
 }
-
-
-
 

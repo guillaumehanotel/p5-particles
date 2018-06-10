@@ -1,49 +1,10 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
-    <style>
-        body {
-            color: black;
-        }
-        #options-box {
+    <link rel="stylesheet" media="screen" type="text/css" href="libs/colorpicker/css/colorpicker.css" />
+    <link rel="stylesheet" media="screen" type="text/css" href="libs/colorpicker/css/layout.css" />
+    <link rel="stylesheet" media="screen" type="text/css" href="css/style.css" />
 
-            background-color: rgba(255,255,255,0.7);
-            border-radius: 1px;
-            width: 250px;
-            height: 300px;
-            position: absolute;
-            z-index: 100;
-        }
-
-        label {
-            color: black;
-            font-size: 15px;
-        }
-
-        .switch label input[type=checkbox]:checked+.lever:after {
-            background-color: #1540d8 !important;
-        }
-        .switch label input[type=checkbox]:checked+.lever {
-            background-color: #385de0 !important;
-        }
-
-        .switch label{
-            margin-left: 10px;
-            display: inline-block;
-            width: 250px;
-        }
-
-        .switch label .lever{
-            position: absolute;
-            margin-top: 6px;
-            right: 0px;
-        }
-        .range {
-            text-align: center;
-        }
-
-
-    </style>
 </head>
 <body>
 
@@ -104,19 +65,41 @@
         </label>
     </div>
 
+    <!-- Range nb balls -->
     <div class="range">
+        Nb Balls : <output name="nbBallsOuput" id="nbBallsOuput">75</output>
         <input type="range" name="nbBalls" id="nbBalls" class="range"
                value="75" min="0" max="120"
                oninput="nbBallsOuput.value = nbBalls.value">
-        Nb Balls : <output name="nbBallsOuput" id="nbBallsOuput">75</output>
     </div>
 
 
+    <!-- Range radius -->
     <div class="range">
+        Radius : <output name="radiusOuput" id="radiusOuput">1</output>
         <input type="range" name="radius" id="radius" class="range"
                value="1" min="0" max="30"
                oninput="radiusOuput.value = radius.value">
-        Radius : <output name="radiusOuput" id="radiusOuput">1</output>
+    </div>
+
+    <!-- Range radius -->
+    <div class="range">
+        Threshold : <output name="thresholdOuput" id="thresholdOuput">150</output>
+        <input type="range" name="threshold" id="threshold" class="range"
+               value="150" min="0" max="800"
+               oninput="thresholdOuput.value = threshold.value">
+    </div>
+
+
+    <p>Background Color : </p>
+    <div id="colorSelector" class="bgColor">
+            <div style="background-color: #0F1C70"></div>
+
+    </div>
+
+    <p>Line Color : </p>
+    <div id="colorSelector" class="lineColor">
+        <div style="background-color: #ffffff"></div>
     </div>
 
 
@@ -126,6 +109,8 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
 <script src="libs/p5/p5.js"></script>
+<script src="libs/colorpicker/js/colorpicker.js"></script>
+
 
 <script src="app/Ball.js"></script>
 <script src="app/BallsAssociation.js"></script>
